@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- manifest.json is file in same directory as index.html -->
+        <link rel="manifest" href="./manifest.json">
+        <meta charset="utf-8">
+        <!-- html 5 meta  viewport element to adjust for size -->
+        <meta name="viewport" content="width=device-width">
+        <title>Movies in the Park</title>
+        <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
+        <link href="https://fonts.gooleapis.com/icon?family=Material-Icons">
+
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+
+	    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+         crossorigin="anonymous">
+
+	<style>
+		.content {
+			display: none;
+			margin: 1em;
+		}
+    </style>
+
+    </head>
+
+    <body>
+
+        <!-- navigation bar -->
+	    <nav class="navbar navbar-default navbar-expand-sm navbar-light bg-light">
+            <!--<nav class="navbar navbar-default"></nav>-->
+            <a class="navbar-brand" href="#">Chicago's Movies in the Park</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            <i class = fas fa-bars></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#search-screen">Search<span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#list-screen">List</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#map-screen">Map</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about-screen">About</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- the content divs -->
+        <div class="content" id="search-screen">
+            <!-- notice the data-mdc-auto-init attribute;  this value is used by the autoinit script -->
+            <div class="mdc-text-field" data-mdc-auto-init="MDCTextField">
+                <input class="mdc-text-field__input" type="text" id="input-movie">
+                <label for="input-movie" class="mdc-floating-label">Search By Movie</label>
+                <div class="mdc-line-ripple"></div>
+            </div>
+
+            <button class="mdc-button mdc-button--raised" id="movie-search">
+                Search
+            </button>
+            
+            <br>
+
+            <div class="mdc-text-field" data-mdc-auto-init="MDCTextField">
+                <input class="mdc-text-field__input" type="text" id="input-park">
+                <label for="input-park" class="mdc-floating-label">Search By Park</label>
+                <div class="mdc-line-ripple"></div>
+            </div>
+
+            <button class="mdc-button mdc-button--raised" id="park-search">
+                Search
+            </button>
+            
+        </div>
+        <div class="content" id="list-screen">
+            <ul id="movie-list" class="list-group"></ul>
+            <!--<div id="showtext">Text Goes Here</div>-->
+        </div>
+        <div class="content" id="map-screen">
+            This is the map screen
+        </div>
+        <div class="content" id="about-screen">
+            This is the about screen
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+        <!-- Inline script to respond to button-->
+        <script type="text/javascript">
+            var endpoint = "https://data.cityofchicago.org/resource/7piw-z6r6.json";
+            // wait til the document is ready
+            $(document).ready(function () {
+                function hideScreens() {
+                    $(".content").hide();
+                }
+
+                $(".nav-link").on("click", function(){
+                    hideScreens();
+                    var target = $(this).attr("href");
+                    //$(target).load("page_content/_" + target.replace())
+                    $(target).show();
+                });
+        
+                $("#movie-search").on("click", function(e) {
+                    $("#movie-list").empty();
+                    $.getJSON(endpoint + "?title=" + $("#input-movie").val(), function(result) {
+                        $.each(result, function(i, v){
+                            $("#movie-list").append("<li class='list-group-item'><span>" + v.title + "<br>" + v.park + "<br>" + v.rating + "<br>" + v.date + "<br>CC: " + v.cc + "</span></li>");
+                            
+                            //$("#showtext").append(v.title + "<br>");
+                            //$("#showtext").append(v.park + "<br>" + "<br>");
+                        });
+                    });
+                    //hideScreens();
+                    //var target = $("#list-screen").attr("href");
+                    //$(target).show();
+                });
+
+                $("#park-search").on("click", function(e) {
+                    $("#movie-list").empty();
+                    $.getJSON(endpoint + "?park=" + $("#input-park").val(), function(result) {
+                        $.each(result, function(i, v){
+                            $("#movie-list").append("<li class='list-group-item'>" + v.title + ", " + v.park + ", " + v.rating + ", " + v.date + ", CC: " + v.cc + "</li>");
+                            
+                            //$("#showtext").append(v.title + "<br>");
+                            //$("#showtext").append(v.park + "<br>" + "<br>");
+                        });
+                    });
+                    //hideScreens();
+                    //var target = $("#list-screen").attr("href");
+                    //$(target).show();
+                });
+    
+                // initializes all elements with the data-mdc-auto-init attribute
+                window.mdc.autoInit();
+
+                // could/should/would add an event handler for the drawer items;  click should close the drawer
+                
+
+            })
+        </script>
+
+        <script>
+            if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+            .then(function(reg) {
+                // registration worked
+                console.log('Registration succeeded. Scope is ' + reg.scope);
+            }).catch(function(error) {
+                // registration failed
+                console.log('Registration failed with ' + error);
+            });
+            }
+        </script>
+
+    </body>
+
+</html>

@@ -1,0 +1,14 @@
+{
+    "name": "Chicago Event Search",
+    "short_name": "EvntSrch",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "blue",
+    "description": "An app to search events in Chicago",
+    "icons": [{
+        "src": "./icon.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      }],
+      "related_applications": []
+}
