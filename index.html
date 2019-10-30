@@ -28,7 +28,7 @@
          * element that contains the map. */
         #map {
           height: 400px;
-          width: 500px;
+          width: 100%;
           
         }
     </style>
@@ -88,18 +88,15 @@
             </button>
             <br>
 
-            <div class="mdc-text-field" data-mdc-auto-init="MDCTextField">
-                    <input class="mdc-text-field__input" type="text" id="input-day">
-                    <label for="input-day" class="mdc-floating-label">Search By Day</label>
-                    <div class="mdc-line-ripple"></div>
-                </div>
-    
-                <button class="mdc-button mdc-button--raised" id="day-search">
-                    Search
-                </button>
-                <br>
-                Fri, Sat, or Sun
-                <br>
+            <label><input type="checkbox" name="Sunday">Sunday</label>
+            <label><input type="checkbox" name="Monday">Monday</label>
+            <label><input type="checkbox" name="Tuesday">Tuesday</label>
+            <label><input type="checkbox" name="Wednesday">Wednesday</label>
+            <label><input type="checkbox" name="Thursday">Thursday</label>
+            <label><input type="checkbox" name="Friday">Friday</label>
+            <label><input type="checkbox" name="Saturday">Saturday</label>
+
+            <br>
 
             <label><input type="checkbox" name="upcoming-movies" checked> Upcoming Movies</label>
             
@@ -140,88 +137,82 @@
                     //$(target).load("page_content/_" + target.replace())
                     $(target).show();
                 });
-        
-                $("#movie-search").on("click", function(e) {
+                
+                function clearMovies() {
                     $("#movie-list").empty();
-                    $.getJSON(endpoint + "?title=" + $("#input-movie").val(), function(result) {
-                        $.each(result, function(i, v){
-                            $("#movie-list").append("<li class='list-group-item'><span>" + v.title + "<br>" + v.park + "<br>" + v.rating + "<br>" + v.date + "<br>CC: " + v.cc + "</span></li>");
-                            var marker = new google.maps.Marker({
-                                position: {lat: parseFloat(v.latitude), lng: parseFloat(v.longitude)},
-                                map: map,
-                                title: v.park
-                            });
-                            //marker.setMap(map);
+                    var numMarkers = markers.length;
+                    for (var i = 0; i < numMarkers; i++){
+                        markers[i].setMap(null);
+                    }
+                }
+
+                function addMovie(v) {
+                    $("#movie-list").append("<li class='list-group-item'><span>" + v.title + "<br>" + v.park + "<br>" + v.rating + "<br>" + v.day + "<br>" + v.date + "<br>CC: " + v.cc + "</span></li>");
+                    if (v.hasOwnProperty('location')) {
+                        console.log(v.location.latitude, v.location.longitude);
+
+                        var infowindow = new google.maps.InfoWindow({
+                            content: v.title + "<br>" + v.park + "<br>" + v.rating + "<br>" + v.day + "<br>" + v.date + "<br>CC: " + v.cc
+                        })
+
+                        var marker = new google.maps.Marker({
+                            position: {lat: parseFloat(v.location.latitude), lng: parseFloat(v.location.longitude)},
+                            map: map,
+                            title: v.park
                         });
 
-                        
-                        //window.location.reload(true);
+                        marker.addListener('click', function() {
+                            infowindow.open(map, marker);
+                        });
+                        markers.push(marker);    
+                    }
+                }
 
+                $("#movie-search").on("click", function(e) {
+                    clearMovies();
+                    //$("input.checked") function());
+                    //Implement days of week and multiple criteria
+
+                    $.getJSON(endpoint + "?title=" + $("#input-movie").val(), function(result) {
+                        $.each(result, function(i, v){
+                            addMovie(v);
+                        });
                     });
-                    //hideScreens();
-                    //var target = $("#list-screen").attr("href");
-                    //$(target).show();
                 });
 
                 $("#park-search").on("click", function(e) {
-                    $("#movie-list").empty();
+                    clearMovies();
                     $.getJSON(endpoint + "?park=" + $("#input-park").val(), function(result) {
                         $.each(result, function(i, v){
-                            $("#movie-list").append("<li class='list-group-item'><span>" + v.title + "<br>" + v.park + "<br>" + v.rating + "<br>" + v.date + "<br>CC: " + v.cc + "</span></li>");
-                            
+                            addMovie(v);
                         });
                     });
-                    //hideScreens();
-                    //var target = $("#list-screen").attr("href");
-                    //$(target).show();
                 });
 
                 $("#day-search").on("click", function(e) {
-                    $("#movie-list").empty();
+                    clearMovies();
                     $.getJSON(endpoint + "?day=" + $("#input-day").val(), function(result) {
                         $.each(result, function(i, v){
-                            $("#movie-list").append("<li class='list-group-item'><span>" + v.title + "<br>" + v.park + "<br>" + v.rating + "<br>" + v.day + "<br>" + v.date + "<br>CC: " + v.cc + "</span></li>");
-                            
+                            addMovie(v);
                         });
                     });
-                    //hideScreens();
-                    //var target = $("#list-screen").attr("href");
-                    //$(target).show();
                 });
                 
                 
                 // initializes all elements with the data-mdc-auto-init attribute
                 window.mdc.autoInit();
                 //alert("ready is done")
-
-                var marker = new google.maps.Marker({
-                    position: {lat: 41.881832, lng: -87.623177},
-                    map: map,
-                    title: "Chicago"
-                });
-
-                //google.maps.event.addDomListener(window, 'load', initialize);
-
-
             })
         </script>
         <script>
             var map;
+            var markers = [];
             function initMap() {
                 map = new google.maps.Map(document.getElementById('map'), {
                     center: {lat: 41.881832, lng: -87.623177},
-                    zoom: 8
+                    zoom: 10
                 });
-
-                //var marker = new google.maps.Marker({
-                //    position: {lat: 41.881832, lng: -87.623177},
-                //    map: map,
-                //    title: "Chicago"
-                //});
-            }
-
-            
-                
+            } 
         </script>
 
        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsHnLGvr0f3IYj5be9kxSPgruS0hb3qF8&callback=initMap"
