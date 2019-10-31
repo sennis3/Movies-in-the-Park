@@ -88,13 +88,13 @@
             </button>
             <br>
 
-            <label><input type="checkbox" name="Sunday">Sunday</label>
-            <label><input type="checkbox" name="Monday">Monday</label>
-            <label><input type="checkbox" name="Tuesday">Tuesday</label>
-            <label><input type="checkbox" name="Wednesday">Wednesday</label>
-            <label><input type="checkbox" name="Thursday">Thursday</label>
-            <label><input type="checkbox" name="Friday">Friday</label>
-            <label><input type="checkbox" name="Saturday">Saturday</label>
+            <label><input type="checkbox" id="sunday-box" name="Sunday">Sunday</label>
+            <label><input type="checkbox" id="monday-box" name="Monday">Monday</label>
+            <label><input type="checkbox" id="tuesday-box" name="Tuesday">Tuesday</label>
+            <label><input type="checkbox" id="wednesday-box" name="Wednesday">Wednesday</label>
+            <label><input type="checkbox" id="thursday-box" name="Thursday">Thursday</label>
+            <label><input type="checkbox" id="friday-box" name="Friday">Friday</label>
+            <label><input type="checkbox" id="saturday-box" name="Saturday">Saturday</label>
 
             <br>
 
@@ -166,16 +166,79 @@
                     }
                 }
 
+                function getDayStr(){
+                    var dayStr = "&$where=day in("
+                    var dayCount = 0;
+                    if(document.getElementById("sunday-box").checked){
+                        if (dayCount > 0)
+                        {
+                            dayStr = dayStr + ", "
+                        }
+                        dayStr = dayStr + "'Sun'";
+                        dayCount++;
+                    }
+                    if(document.getElementById("monday-box").checked){
+                        if (dayCount > 0)
+                        {
+                            dayStr = dayStr + ", "
+                        }
+                        dayStr = dayStr + "'Mon'";
+                        dayCount++;
+                    }
+                    if(document.getElementById("tuesday-box").checked){
+                        if (dayCount > 0)
+                        {
+                            dayStr = dayStr + ", "
+                        }
+                        dayStr = dayStr + "'Tue'";
+                        dayCount++;
+                    }
+                    if(document.getElementById("wednesday-box").checked){
+                        if (dayCount > 0)
+                        {
+                            dayStr = dayStr + ", "
+                        }
+                        dayStr = dayStr + "'Wed'";
+                        dayCount++;
+                    }
+                    if(document.getElementById("thursday-box").checked){
+                        if (dayCount > 0)
+                        {
+                            dayStr = dayStr + ", "
+                        }
+                        dayStr = dayStr + "'Thu'";
+                        dayCount++;
+                    }
+                    if(document.getElementById("friday-box").checked){
+                        if (dayCount > 0)
+                        {
+                            dayStr = dayStr + ", "
+                        }
+                        dayStr = dayStr + "'Fri'";
+                        dayCount++;
+                    }
+                    if(document.getElementById("saturday-box").checked){
+                        if (dayCount > 0)
+                        {
+                            dayStr = dayStr + ", "
+                        }
+                        dayStr = dayStr + "'Sat'";
+                        dayCount++;
+                    }
+                    dayStr = dayStr + ")";
+
+                    if (dayCount == 0){
+                        dayStr = "";
+                    }
+
+                    return dayStr;
+                }
+
                 $("#movie-search").on("click", function(e) {
                     clearMovies();
-                    var checkedDays = $("input.checked");
-                    $.each(checkedDays, function(i, v){
-                        console.log(v.value);
-                    });
-                    //Implement days of week and multiple criteria
-
+                    var str = getDayStr();
                     var numResults = 0;
-                    $.getJSON(endpoint + "?title=" + $("#input-movie").val(), function(result) {
+                    $.getJSON(endpoint + "?title=" + $("#input-movie").val() + str, function(result) {
                         $.each(result, function(i, v){
                             addMovie(v);
                             numResults++;
@@ -192,23 +255,15 @@
 
                 $("#park-search").on("click", function(e) {
                     clearMovies();
+                    var str = getDayStr();
                     var numResults = 0;
-                    $.getJSON(endpoint + "?park=" + $("#input-park").val(), function(result) {
+                    $.getJSON(endpoint + "?park=" + $("#input-park").val() + str, function(result) {
                         $.each(result, function(i, v){
                             addMovie(v);
                             numResults++;
                         });
                         $("#num-results-text").empty();
                         $("#num-results-text").append(numResults + " result(s)");
-                    });
-                });
-
-                $("#day-search").on("click", function(e) {
-                    clearMovies();
-                    $.getJSON(endpoint + "?day=" + $("#input-day").val(), function(result) {
-                        $.each(result, function(i, v){
-                            addMovie(v);
-                        });
                     });
                 });
                 
