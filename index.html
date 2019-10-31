@@ -178,17 +178,15 @@
                         $.each(result, function(i, v){
                             addMovie(v);
                             numResults++;
-                            console.log(numResults);
                         });
-                        console.log(numResults);
                         $("#num-results-text").empty();
                         $("#num-results-text").append(numResults + " result(s)");
-                    });
-                    
-                    /*
-                    hideScreens();
-                    var target = $("list-screen").attr("href");
-                    $(target).show();*/
+
+                        //Trying to switch to list-screen
+                        /*$(".content").hide();
+                        var target = $("#list-screen").attr("href");
+                        $(target).show();*/
+                    });                   
                 });
 
                 $("#park-search").on("click", function(e) {
@@ -196,7 +194,10 @@
                     $.getJSON(endpoint + "?park=" + $("#input-park").val(), function(result) {
                         $.each(result, function(i, v){
                             addMovie(v);
+                            numResults++;
                         });
+                        $("#num-results-text").empty();
+                        $("#num-results-text").append(numResults + " result(s)");
                     });
                 });
 
