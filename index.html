@@ -149,8 +149,6 @@
                 function addMovie(v) {
                     $("#movie-list").append("<li class='list-group-item'><span>" + v.title + "<br>" + v.park + "<br>" + v.rating + "<br>" + v.day + "<br>" + v.date + "<br>CC: " + v.cc + "</span></li>");
                     if (v.hasOwnProperty('location')) {
-                        console.log(v.location.latitude, v.location.longitude);
-
                         var infowindow = new google.maps.InfoWindow({
                             content: v.title + "<br>" + v.park + "<br>" + v.rating + "<br>" + v.day + "<br>" + v.date + "<br>CC: " + v.cc
                         })
@@ -170,7 +168,10 @@
 
                 $("#movie-search").on("click", function(e) {
                     clearMovies();
-                    //$("input.checked") function());
+                    var checkedDays = $("input.checked");
+                    $.each(checkedDays, function(i, v){
+                        console.log(v.value);
+                    });
                     //Implement days of week and multiple criteria
 
                     var numResults = 0;
@@ -191,6 +192,7 @@
 
                 $("#park-search").on("click", function(e) {
                     clearMovies();
+                    var numResults = 0;
                     $.getJSON(endpoint + "?park=" + $("#input-park").val(), function(result) {
                         $.each(result, function(i, v){
                             addMovie(v);
