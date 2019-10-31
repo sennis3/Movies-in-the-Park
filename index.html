@@ -102,6 +102,7 @@
             
         </div>
         <div class="content" id="list-screen">
+            <div id="num-results-text"></div><br>
             <ul id="movie-list" class="list-group"></ul>
         </div>
         <div class="content" id="map-screen">
@@ -134,7 +135,6 @@
                 $(".nav-link").on("click", function(){
                     hideScreens();
                     var target = $(this).attr("href");
-                    //$(target).load("page_content/_" + target.replace())
                     $(target).show();
                 });
                 
@@ -164,7 +164,7 @@
                         marker.addListener('click', function() {
                             infowindow.open(map, marker);
                         });
-                        markers.push(marker);    
+                        markers.push(marker);
                     }
                 }
 
@@ -173,11 +173,22 @@
                     //$("input.checked") function());
                     //Implement days of week and multiple criteria
 
+                    var numResults = 0;
                     $.getJSON(endpoint + "?title=" + $("#input-movie").val(), function(result) {
                         $.each(result, function(i, v){
                             addMovie(v);
+                            numResults++;
+                            console.log(numResults);
                         });
+                        console.log(numResults);
+                        $("#num-results-text").empty();
+                        $("#num-results-text").append(numResults + " result(s)");
                     });
+                    
+                    /*
+                    hideScreens();
+                    var target = $("list-screen").attr("href");
+                    $(target).show();*/
                 });
 
                 $("#park-search").on("click", function(e) {
