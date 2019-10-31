@@ -95,10 +95,10 @@
             <label><input type="checkbox" id="thursday-box" name="Thursday">Thursday</label>
             <label><input type="checkbox" id="friday-box" name="Friday">Friday</label>
             <label><input type="checkbox" id="saturday-box" name="Saturday">Saturday</label>
-
             <br>
 
             <label><input type="checkbox" id="upcoming-movies" name="upcoming-movies" checked> Upcoming Movies</label>
+            <br><br>Leave fields blank for all results<br>
             
         </div>
         <div class="content" id="list-screen">
@@ -166,8 +166,15 @@
                     }
                 }
 
-                function getDayStr(){
-                    var dayStr = "&$where=day in("
+                function getDayStr(blankTitle){
+                    var dayStr = "";
+                    if (blankTitle == 0){
+                        dayStr = "&";
+                    }
+                    else{
+                        dayStr = "?";
+                    }
+                    var dayStr = dayStr + "$where=day in("
                     var dayCount = 0;
                     if(document.getElementById("sunday-box").checked){
                         if (dayCount > 0)
@@ -234,7 +241,7 @@
                     return dayStr;
                 }
 
-                function getTimeStr(){
+                function getTimeStr(blank){
                     var timeStr = "";
                     if(document.getElementById("upcoming-movies").checked){
                         var d = new Date();
@@ -242,16 +249,34 @@
                         var ds = d.toISOString();
                         console.log(ds);
                         var split = ds.split("Z")[0];
-                        timeStr = "&$where=date>\'" + split + "\'";
+                        
+                        if (blank == 0){
+                            timeStr = "&";
+                        }
+                        else{
+                            timeStr = "?";
+                        }
+                        timeStr = timeStr+ "$where=date>\'" + split + "\'";
                     }
                     return timeStr;
                 }
 
                 $("#movie-search").on("click", function(e) {
                     clearMovies();
-                    var str = getDayStr() + getTimeStr();;
+                    var str = "";
+                    var blank = 1;
+                    var inputStr = $("#input-movie").val();
+                    if (inputStr.length > 0){
+                        str = "?title=" + $("#input-movie").val();
+                        blank = 0;
+                    }
+                    var str = str + getDayStr(blank);
+                    if (str.length > 0){
+                        blank = 0;
+                    }
+                    str = str + getTimeStr(blank);
                     var numResults = 0;
-                    $.getJSON(endpoint + "?title=" + $("#input-movie").val() + str, function(result) {
+                    $.getJSON(endpoint + str, function(result) {
                         $.each(result, function(i, v){
                             addMovie(v);
                             numResults++;
@@ -268,9 +293,22 @@
 
                 $("#park-search").on("click", function(e) {
                     clearMovies();
-                    var str = getDayStr();
+
+                    var str = "";
+                    var blank = 1;
+                    var inputStr = $("#input-park").val();
+                    if (inputStr.length > 0){
+                        str = "?park=" + $("#input-park").val();
+                        blank = 0;
+                    }
+                    var str = str + getDayStr(blank);
+                    if (str.length > 0){
+                        blank = 0;
+                    }
+                    str = str + getTimeStr(blank);
+
                     var numResults = 0;
-                    $.getJSON(endpoint + "?park=" + $("#input-park").val() + str, function(result) {
+                    $.getJSON(endpoint + str, function(result) {
                         $.each(result, function(i, v){
                             addMovie(v);
                             numResults++;
